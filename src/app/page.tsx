@@ -6,61 +6,55 @@ import { Task, User, TaskStatus } from "@/components/types";
 import { ErrorBoundary } from "react-error-boundary";
 import NameInputModal from "@/components/NameInputModal";
 
-// Sample data
-const initialTasks: Task[] = [
-  {
-    id: "1",
-    title: "Welcome to Kanban Board!",
-    description: "This is your first task. Try dragging it to another column.",
-    status: TaskStatus.TODO,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    assignedUsers: ["1"],
-  },
-  {
-    id: "2",
-    title: "Learn the Basics",
-    description:
-      "You can edit tasks, assign users, and move them between columns.",
-    status: TaskStatus.IN_PROGRESS,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    assignedUsers: ["2"],
-  },
-  {
-    id: "3",
-    title: "Get Started",
-    description: "Create your own tasks and organize your work!",
-    status: TaskStatus.DONE,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    assignedUsers: ["1", "2"],
-  },
-];
-
-const users: User[] = [
-  { id: "1", name: "John Doe" },
-  { id: "2", name: "Jane Smith" },
-];
-
 export default function BoardPage() {
   const [isClient, setIsClient] = useState(false);
-  const [tasks, setTasks] = useState<Task[]>(initialTasks);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [showNameModal, setShowNameModal] = useState(true);
 
   useEffect(() => {
     setIsClient(true);
+    // Load existing users and tasks from localStorage
+    const storedUsers = localStorage.getItem("users");
+    const storedTasks = localStorage.getItem("tasks");
+
+    if (storedUsers) {
+      setUsers(JSON.parse(storedUsers));
+    }
+    if (storedTasks) {
+      setTasks(JSON.parse(storedTasks));
+    }
+
+    // Check for current user
+    const storedUser = localStorage.getItem("currentUser");
+    if (storedUser) {
+      setCurrentUser(JSON.parse(storedUser));
+      setShowNameModal(false);
+    }
   }, []);
+
+  // Save to localStorage whenever data changes
+  useEffect(() => {
+    if (users.length > 0) {
+      localStorage.setItem("users", JSON.stringify(users));
+    }
+  }, [users]);
+
+  useEffect(() => {
+    if (tasks.length > 0) {
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+    }
+  }, [tasks]);
 
   const handleNameSubmit = (name: string) => {
     const newUser: User = {
-      id: Date.now().toString(), // Generate a unique ID
+      id: Date.now().toString(),
       name: name,
     };
     setCurrentUser(newUser);
+    setUsers((prevUsers) => [...prevUsers, newUser]);
     setShowNameModal(false);
-
     localStorage.setItem("currentUser", JSON.stringify(newUser));
   };
 
@@ -87,50 +81,26 @@ export default function BoardPage() {
   };
 
   if (!isClient) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-pulse">Loading your Kanban Board...</div>
-      </div>
-    );
+    return null;
   }
 
   return (
-    <>
-      {showNameModal && <NameInputModal onSubmit={handleNameSubmit} />}
-      {!showNameModal && currentUser && (
-        <div className="min-h-screen bg-gray-50">
-          <header className="bg-white shadow-sm">
-            <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
-              <h1 className="text-2xl font-bold text-gray-900">
-                Welcome, {currentUser.name}
-              </h1>
-              <p className="mt-1 text-sm text-gray-500">
-                Organize your tasks and boost productivity
-              </p>
-            </div>
-          </header>
-          <ErrorBoundary
-            fallbackRender={({ error }) => (
-              <div className="p-4">
-                <h2 className="text-red-600">Something went wrong:</h2>
-                <pre className="mt-2 text-sm">{error.message}</pre>
-              </div>
-            )}
-          >
-            <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-              <KanbanBoard
-                tasks={tasks}
-                users={users}
-                currentUser={currentUser}
-                onTaskMove={handleTaskMove}
-                onTaskEdit={handleTaskEdit}
-                onTaskDelete={handleTaskDelete}
-                onTaskAdd={handleTaskAdd}
-              />
-            </div>
-          </ErrorBoundary>
-        </div>
+    <ErrorBoundary fallback={<div>Something went wrong</div>}>
+      {showNameModal ? (
+        <NameInputModal onSubmit={handleNameSubmit} />
+      ) : (
+        currentUser && (
+          <KanbanBoard
+            tasks={tasks}
+            users={users}
+            currentUser={currentUser}
+            onTaskMove={handleTaskMove}
+            onTaskEdit={handleTaskEdit}
+            onTaskDelete={handleTaskDelete}
+            onTaskAdd={handleTaskAdd}
+          />
+        )
       )}
-    </>
+    </ErrorBoundary>
   );
 }
