@@ -56,7 +56,6 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
     const newTask = {
       ...taskData,
       id: Date.now().toString(),
-      status: TaskStatus.TODO,
       createdAt: new Date(),
       updatedAt: new Date(),
       assignedUsers: [currentUser.id],
