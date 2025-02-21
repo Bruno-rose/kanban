@@ -12,8 +12,9 @@ const config: Config.InitialOptions = {
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
   transform: {
     '^.+\\.(ts|tsx)$': ['ts-jest', {
-      tsconfig: 'tsconfig.json',
-      useESM: true,
+      tsconfig: {
+        jsx: 'react-jsx'
+      }
     }],
   },
   testMatch: [
