@@ -33,7 +33,9 @@ describe("UserList", () => {
     const currentUserElement = screen.getByText(
       mockCurrentUser.name
     ).parentElement;
-    expect(currentUserElement).toHaveClass("bg-blue-50");
+    expect(currentUserElement).toHaveClass(
+      "flex items-center gap-2 px-3 py-2 rounded-lg bg-custom-green text-custom-dark"
+    );
   });
 
   it("renders avatar when available", () => {
