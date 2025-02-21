@@ -18,13 +18,15 @@ const TaskCard: React.FC<TaskCardProps> = ({
   onDelete,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id: task.id,
-  });
+  const { attributes, listeners, setNodeRef, transform, isDragging } =
+    useDraggable({
+      id: task.id,
+    });
 
   const style = transform
     ? {
-        transform: CSS.Transform.toString(transform),
+        transform: CSS.Translate.toString(transform),
+        opacity: isDragging ? 0.3 : undefined,
       }
     : undefined;
 
