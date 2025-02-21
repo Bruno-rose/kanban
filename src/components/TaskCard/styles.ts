@@ -1,10 +1,10 @@
 export const styles = {
-  card: 'bg-white p-5 border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all duration-200',
-  header: 'flex justify-between items-start gap-4',
-  title: 'font-medium text-gray-900 line-clamp-2',
-  buttonContainer: 'flex gap-3 shrink-0 opacity-70',
-  editButton: 'text-gray-600 hover:text-blue-500 text-sm transition-colors duration-200',
-  deleteButton: 'text-gray-600 hover:text-red-500 text-sm transition-colors duration-200',
-  description: 'text-gray-600 mt-3 text-sm leading-relaxed line-clamp-3',
-  assignedUsers: 'mt-4 text-xs text-gray-500'
+  card: 'bg-custom-light p-4 rounded-lg shadow-card border border-gray-200',
+  header: 'flex justify-between items-start gap-3',
+  title: 'font-semibold text-custom-dark',
+  buttonContainer: 'flex gap-2 shrink-0',
+  editButton: 'px-2 py-1 text-sm bg-custom-green text-custom-dark rounded',
+  deleteButton: 'px-2 py-1 text-sm bg-red-500 text-white rounded',
+  description: 'mt-2 text-sm text-custom-dark',
+  footer: 'mt-4 flex items-center justify-between text-xs text-custom-dark'
 }; 
