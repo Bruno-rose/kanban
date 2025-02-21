@@ -33,9 +33,15 @@ const Column: React.FC<ColumnProps> = ({
     setShowTaskForm(false);
   };
 
+  const mapStatusToTitle: Record<TaskStatus, string> = {
+    [TaskStatus.TODO]: "To Do",
+    [TaskStatus.IN_PROGRESS]: "In Progress",
+    [TaskStatus.DONE]: "Done",
+  };
+
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}>{status}</h2>
+      <h2 className={styles.title}>{mapStatusToTitle[status]}</h2>
 
       <div ref={setNodeRef} className={styles.content}>
         {tasks.map((task, index) => (
