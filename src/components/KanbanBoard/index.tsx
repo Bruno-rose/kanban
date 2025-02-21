@@ -24,6 +24,7 @@ interface KanbanBoardProps {
   onTaskMove: (taskId: string, newStatus: TaskStatus) => void;
   onTaskEdit: (task: Task) => void;
   onTaskDelete: (taskId: string) => void;
+  onTaskAdd: (task: Task) => void;
 }
 
 const KanbanBoard: React.FC<KanbanBoardProps> = ({
@@ -33,6 +34,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
   onTaskMove,
   onTaskEdit,
   onTaskDelete,
+  onTaskAdd,
 }) => {
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -59,7 +61,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
       updatedAt: new Date(),
       assignedUsers: [currentUser.id],
     } as Task;
-    onTaskEdit(newTask);
+    onTaskAdd(newTask);
   };
 
   return (

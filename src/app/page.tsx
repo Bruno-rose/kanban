@@ -82,6 +82,10 @@ export default function BoardPage() {
     setTasks(tasks.filter((task) => task.id !== taskId));
   };
 
+  const handleTaskAdd = (newTask: Task) => {
+    setTasks((prevTasks) => [...prevTasks, newTask]);
+  };
+
   if (!isClient) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -121,6 +125,7 @@ export default function BoardPage() {
                 onTaskMove={handleTaskMove}
                 onTaskEdit={handleTaskEdit}
                 onTaskDelete={handleTaskDelete}
+                onTaskAdd={handleTaskAdd}
               />
             </div>
           </ErrorBoundary>

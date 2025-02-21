@@ -25,6 +25,7 @@ const mockProps = {
   onTaskMove: jest.fn(),
   onTaskEdit: jest.fn(),
   onTaskDelete: jest.fn(),
+  onTaskAdd: jest.fn(),
 };
 
 // Mock DndContext's onDragEnd handler
@@ -88,7 +89,7 @@ describe("actions", () => {
     );
   });
 
-  it("calls onTaskEdit when new task is added", () => {
+  it("calls onTaskAdd when new task is created", () => {
     render(<KanbanBoard {...mockProps} />);
 
     // Find and click the "Add Task" button
@@ -101,8 +102,8 @@ describe("actions", () => {
     });
     fireEvent.submit(screen.getByTestId("task-form"));
 
-    expect(mockProps.onTaskEdit).toHaveBeenCalled();
-    const calledWith = mockProps.onTaskEdit.mock.calls[0][0];
+    expect(mockProps.onTaskAdd).toHaveBeenCalled();
+    const calledWith = mockProps.onTaskAdd.mock.calls[0][0];
     expect(calledWith.title).toBe("New Task");
     expect(calledWith.status).toBe(TaskStatus.TODO);
     expect(calledWith.assignedUsers).toContain(mockProps.currentUser.id);
