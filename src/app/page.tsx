@@ -5,8 +5,10 @@ import KanbanBoard from "@/components/KanbanBoard";
 import { Task, User, TaskStatus } from "@/components/types";
 import { ErrorBoundary } from "react-error-boundary";
 import NameInputModal from "@/components/NameInputModal";
+import { SocketProvider, useSocket } from "@/contexts/SocketContext";
 
-export default function BoardPage() {
+function Board() {
+  const { socket, connected } = useSocket();
   const [isClient, setIsClient] = useState(false);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [users, setUsers] = useState<User[]>([]);
@@ -15,69 +17,81 @@ export default function BoardPage() {
 
   useEffect(() => {
     setIsClient(true);
-    // Load existing users and tasks from localStorage
-    const storedUsers = localStorage.getItem("users");
-    const storedTasks = localStorage.getItem("tasks");
-
-    if (storedUsers) {
-      setUsers(JSON.parse(storedUsers));
-    }
-    if (storedTasks) {
-      setTasks(JSON.parse(storedTasks));
-    }
-
-    // Check for current user
-    const storedUser = localStorage.getItem("currentUser");
-    if (storedUser) {
-      setCurrentUser(JSON.parse(storedUser));
-      setShowNameModal(false);
-    }
   }, []);
 
-  // Save to localStorage whenever data changes
   useEffect(() => {
-    if (users.length > 0) {
-      localStorage.setItem("users", JSON.stringify(users));
-    }
-  }, [users]);
+    if (!socket) return;
 
-  useEffect(() => {
-    if (tasks.length > 0) {
-      localStorage.setItem("tasks", JSON.stringify(tasks));
-    }
-  }, [tasks]);
+    socket.on("initialState", (tasks, users) => {
+      setTasks(tasks);
+      setUsers(users);
+    });
+
+    socket.on("userJoined", (user) => {
+      setUsers((prev) => [...prev, user]);
+    });
+
+    socket.on("userLeft", (userId) => {
+      setUsers((prev) => prev.filter((u) => u.id !== userId));
+    });
+
+    socket.on("taskUpdated", (task) => {
+      setTasks((prev) => prev.map((t) => (t.id === task.id ? task : t)));
+    });
+
+    socket.on("taskDeleted", (taskId) => {
+      setTasks((prev) => prev.filter((t) => t.id !== taskId));
+    });
+
+    socket.on("taskAdded", (task) => {
+      setTasks((prev) => [...prev, task]);
+    });
+
+    return () => {
+      socket.off("initialState");
+      socket.off("userJoined");
+      socket.off("userLeft");
+      socket.off("taskUpdated");
+      socket.off("taskDeleted");
+      socket.off("taskAdded");
+    };
+  }, [socket]);
 
   const handleNameSubmit = (name: string) => {
+    if (!socket) return;
+
     const newUser: User = {
-      id: Date.now().toString(),
+      id: socket.id,
       name: name,
     };
     setCurrentUser(newUser);
-    setUsers((prevUsers) => [...prevUsers, newUser]);
+    socket.emit("joinBoard", newUser);
     setShowNameModal(false);
-    localStorage.setItem("currentUser", JSON.stringify(newUser));
   };
 
   const handleTaskMove = (taskId: string, newStatus: TaskStatus) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === taskId ? { ...task, status: newStatus } : task
-      )
-    );
+    if (!socket || !currentUser) return;
+
+    const task = tasks.find((t) => t.id === taskId);
+    if (task) {
+      const updatedTask = { ...task, status: newStatus };
+      socket.emit("updateTask", updatedTask);
+    }
   };
 
   const handleTaskEdit = (updatedTask: Task) => {
-    setTasks(
-      tasks.map((task) => (task.id === updatedTask.id ? updatedTask : task))
-    );
+    if (!socket) return;
+    socket.emit("updateTask", updatedTask);
   };
 
   const handleTaskDelete = (taskId: string) => {
-    setTasks(tasks.filter((task) => task.id !== taskId));
+    if (!socket) return;
+    socket.emit("deleteTask", taskId);
   };
 
   const handleTaskAdd = (newTask: Task) => {
-    setTasks((prevTasks) => [...prevTasks, newTask]);
+    if (!socket) return;
+    socket.emit("addTask", newTask);
   };
 
   if (!isClient) {
@@ -102,5 +116,13 @@ export default function BoardPage() {
         )
       )}
     </ErrorBoundary>
+  );
+}
+
+export default function BoardPage() {
+  return (
+    <SocketProvider>
+      <Board />
+    </SocketProvider>
   );
 }
