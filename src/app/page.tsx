@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import KanbanBoard from "@/components/KanbanBoard";
 import { Task, User, TaskStatus } from "@/components/types";
 import { ErrorBoundary } from "react-error-boundary";
+import NameInputModal from "@/components/NameInputModal";
 
 // Sample data
 const initialTasks: Task[] = [
@@ -45,11 +46,23 @@ const users: User[] = [
 export default function BoardPage() {
   const [isClient, setIsClient] = useState(false);
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
-  const currentUser = users[0];
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [showNameModal, setShowNameModal] = useState(true);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  const handleNameSubmit = (name: string) => {
+    const newUser: User = {
+      id: Date.now().toString(), // Generate a unique ID
+      name: name,
+    };
+    setCurrentUser(newUser);
+    setShowNameModal(false);
+
+    localStorage.setItem("currentUser", JSON.stringify(newUser));
+  };
 
   const handleTaskMove = (taskId: string, newStatus: TaskStatus) => {
     setTasks(
@@ -78,36 +91,41 @@ export default function BoardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
-          <h1 className="text-2xl font-bold text-gray-900">
-            Welcome to Your Kanban Board
-          </h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Organize your tasks and boost productivity
-          </p>
+    <>
+      {showNameModal && <NameInputModal onSubmit={handleNameSubmit} />}
+      {!showNameModal && currentUser && (
+        <div className="min-h-screen bg-gray-50">
+          <header className="bg-white shadow-sm">
+            <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+              <h1 className="text-2xl font-bold text-gray-900">
+                Welcome, {currentUser.name}
+              </h1>
+              <p className="mt-1 text-sm text-gray-500">
+                Organize your tasks and boost productivity
+              </p>
+            </div>
+          </header>
+          <ErrorBoundary
+            fallbackRender={({ error }) => (
+              <div className="p-4">
+                <h2 className="text-red-600">Something went wrong:</h2>
+                <pre className="mt-2 text-sm">{error.message}</pre>
+              </div>
+            )}
+          >
+            <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+              <KanbanBoard
+                tasks={tasks}
+                users={users}
+                currentUser={currentUser}
+                onTaskMove={handleTaskMove}
+                onTaskEdit={handleTaskEdit}
+                onTaskDelete={handleTaskDelete}
+              />
+            </div>
+          </ErrorBoundary>
         </div>
-      </header>
-      <ErrorBoundary
-        fallbackRender={({ error }) => (
-          <div className="p-4">
-            <h2 className="text-red-600">Something went wrong:</h2>
-            <pre className="mt-2 text-sm">{error.message}</pre>
-          </div>
-        )}
-      >
-        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-          <KanbanBoard
-            tasks={tasks}
-            users={users}
-            currentUser={currentUser}
-            onTaskMove={handleTaskMove}
-            onTaskEdit={handleTaskEdit}
-            onTaskDelete={handleTaskDelete}
-          />
-        </div>
-      </ErrorBoundary>
-    </div>
+      )}
+    </>
   );
 }
