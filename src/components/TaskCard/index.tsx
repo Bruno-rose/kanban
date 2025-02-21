@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { useDraggable } from '@dnd-kit/core';
-import { CSS } from '@dnd-kit/utilities';
-import { styles } from './styles';
-import { Task, User } from '@/components/types';
+import React, { useState } from "react";
+import { useDraggable } from "@dnd-kit/core";
+import { CSS } from "@dnd-kit/utilities";
+import { styles } from "./styles";
+import { Task } from "@/components/types";
 
 interface TaskCardProps {
   task: Task;
@@ -22,9 +22,16 @@ const TaskCard: React.FC<TaskCardProps> = ({
     id: task.id,
   });
 
-  const style = transform ? {
-    transform: CSS.Transform.toString(transform),
-  } : undefined;
+  const style = transform
+    ? {
+        transform: CSS.Transform.toString(transform),
+      }
+    : undefined;
+
+  const handleEdit = () => {
+    setIsEditing(true);
+    onEdit(task);
+  };
 
   return (
     <div
@@ -37,11 +44,8 @@ const TaskCard: React.FC<TaskCardProps> = ({
       <div className={styles.header}>
         <h3 className={styles.title}> {task.title} </h3>
 
-        <div className={styles.buttonContainer} >
-          <button
-            onClick={() => setIsEditing(true)}
-            className={styles.editButton}
-          >
+        <div className={styles.buttonContainer}>
+          <button onClick={() => handleEdit()} className={styles.editButton}>
             Edit
           </button>
 
