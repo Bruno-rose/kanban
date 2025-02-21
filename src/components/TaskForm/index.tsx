@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import clsx from "clsx";
-
-import { Task } from "@/components/types";
 import { styles } from "./styles";
+import clsx from "clsx";
+import { Task, TaskStatus } from "@/components/types";
 
-export interface TaskFormProps {
+interface TaskFormProps {
   task?: Task;
   onSubmit: (task: Partial<Task>) => void;
   onCancel: () => void;
+  className?: string;
 }
 
 const TaskForm: React.FC<TaskFormProps> = ({
@@ -25,17 +25,20 @@ const TaskForm: React.FC<TaskFormProps> = ({
       ...task,
       title: title.trim(),
       description: description.trim(),
-      status: task?.status || "TODO",
+      status: task?.status || TaskStatus.TODO,
     });
   };
 
   return (
-    <form onSubmit={handleSubmit} className={clsx(styles.form, className)}>
+    <form
+      onSubmit={handleSubmit}
+      className={clsx(styles.form, className)}
+      data-testid="task-form"
+    >
       <div>
         <label htmlFor="title" className={styles.label}>
           Title
         </label>
-
         <input
           id="title"
           type="text"
@@ -50,7 +53,6 @@ const TaskForm: React.FC<TaskFormProps> = ({
         <label htmlFor="description" className={styles.label}>
           Description
         </label>
-
         <textarea
           id="description"
           value={description}
@@ -67,7 +69,6 @@ const TaskForm: React.FC<TaskFormProps> = ({
         >
           Cancel
         </button>
-
         <button type="submit" className={styles.submitButton}>
           {task ? "Save" : "Create"} Task
         </button>
