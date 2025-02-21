@@ -11,8 +11,8 @@ const mockTask = {
   description: faker.lorem.paragraph(),
   status: "TODO" as TaskStatus,
   userId: faker.string.uuid(),
-  createdAt: faker.date.recent().toISOString(),
-  updatedAt: faker.date.recent().toISOString(),
+  createdAt: new Date(faker.date.recent().toISOString()),
+  updatedAt: new Date(faker.date.recent().toISOString()),
   assignedUsers: [],
 };
 
