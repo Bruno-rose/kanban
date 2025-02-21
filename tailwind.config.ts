@@ -12,6 +12,7 @@ export default {
         'custom-green': '#7dff8a',
         'custom-dark': '#101010',
         'custom-light': '#fafafa',
+        'custom-green-light': '#cce2d7',
       },
       borderRadius: {
         'lg': '0.25rem',
