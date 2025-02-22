@@ -11,6 +11,9 @@ interface ServerToClientEvents {
   taskDeleted: (taskId: string) => void;
   taskAdded: (task: Task) => void;
   initialState: (tasks: Task[], users: User[]) => void;
+  taskEditingStarted: (taskId: string, userName: string) => void;
+  taskEditingStopped: (taskId: string) => void;
+  deleteTaskError: (taskId: string, errorMessage: string) => void;
 }
 
 interface ClientToServerEvents {
@@ -18,6 +21,8 @@ interface ClientToServerEvents {
   updateTask: (task: Task) => void;
   deleteTask: (taskId: string) => void;
   addTask: (task: Task) => void;
+  startEditing: (taskId: string) => void;
+  stopEditing: (taskId: string) => void;
 }
 
 const app = express();
@@ -40,7 +45,8 @@ const io = new Server(httpServer, {
 
 const state = {
   tasks: [] as Task[],
-  users: [] as User[]
+  users: [] as User[],
+  editingSessions: new Map<string, string>() // taskId -> userId
 };
 
 io.on("connection", (socket) => {
@@ -61,6 +67,17 @@ io.on("connection", (socket) => {
   });
 
   socket.on("deleteTask", (taskId) => {
+    // Check if task is being edited
+    const editorId = state.editingSessions.get(taskId);
+    if (editorId) {
+      const editor = state.users.find(u => u.id === editorId);
+      if (editor) {
+        // Emit error back to the requesting client
+        socket.emit("deleteTaskError", taskId, `Task is being edited by ${editor.name}`);
+        return;
+      }
+    }
+
     state.tasks = state.tasks.filter(t => t.id !== taskId);
     io.emit("taskDeleted", taskId);
   });
@@ -70,7 +87,40 @@ io.on("connection", (socket) => {
     io.emit("taskAdded", task);
   });
 
+  socket.on("startEditing", (taskId) => {
+    const user = state.users.find(u => u.id === socket.id);
+    if (!user) return;
+
+    state.editingSessions.set(taskId, socket.id);
+    const task = state.tasks.find(t => t.id === taskId);
+    if (task) {
+      task.currentEditor = user.name;
+      io.emit("taskEditingStarted", taskId, user.name);
+    }
+  });
+
+  socket.on("stopEditing", (taskId) => {
+    state.editingSessions.delete(taskId);
+    const task = state.tasks.find(t => t.id === taskId);
+    if (task) {
+      task.currentEditor = undefined;
+      io.emit("taskEditingStopped", taskId);
+    }
+  });
+
   socket.on("disconnect", () => {
+    // Clear any editing sessions for this user
+    for (const [taskId, userId] of state.editingSessions.entries()) {
+      if (userId === socket.id) {
+        state.editingSessions.delete(taskId);
+        const task = state.tasks.find(t => t.id === taskId);
+        if (task) {
+          task.currentEditor = undefined;
+          io.emit("taskEditingStopped", taskId);
+        }
+      }
+    }
+    
     const userIndex = state.users.findIndex(u => u.id === socket.id);
     if (userIndex !== -1) {
       const user = state.users[userIndex];

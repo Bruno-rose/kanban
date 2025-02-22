@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { styles } from "./styles";
 import { Task } from "@/components/types";
 import TaskForm from "@/components/TaskForm";
+import { useSocket } from "@/contexts/SocketContext";
 
 interface TaskCardProps {
   task: Task;
@@ -20,10 +21,28 @@ const TaskCard: React.FC<TaskCardProps> = ({
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const { socket } = useSocket();
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({
       id: task.id,
     });
+
+  // Add useEffect to handle editing state
+  useEffect(() => {
+    if (!socket) return;
+
+    if (isEditing) {
+      socket.emit("startEditing", task.id);
+    } else {
+      socket.emit("stopEditing", task.id);
+    }
+
+    return () => {
+      if (isEditing) {
+        socket.emit("stopEditing", task.id);
+      }
+    };
+  }, [isEditing, socket, task.id]);
 
   const style = transform
     ? {
@@ -39,7 +58,8 @@ const TaskCard: React.FC<TaskCardProps> = ({
   };
 
   const handleDelete = async (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent drag from starting
+    e.stopPropagation();
+
     if (!window.confirm("Are you sure you want to delete this task?")) {
       return;
     }
@@ -50,6 +70,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
     } catch (error) {
       console.error("Failed to delete task:", error);
       alert("Failed to delete task. Please try again.");
+    } finally {
       setIsDeleting(false);
     }
   };
