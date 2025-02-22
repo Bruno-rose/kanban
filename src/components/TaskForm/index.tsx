@@ -8,6 +8,7 @@ interface TaskFormProps {
   onSubmit: (task: Partial<Task>) => void;
   onCancel: () => void;
   className?: string;
+  isSubmitting?: boolean;
 }
 
 const TaskForm: React.FC<TaskFormProps> = ({
@@ -15,18 +16,51 @@ const TaskForm: React.FC<TaskFormProps> = ({
   onSubmit,
   onCancel,
   className,
+  isSubmitting = false,
 }) => {
   const [title, setTitle] = useState(task?.title || "");
   const [description, setDescription] = useState(task?.description || "");
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(e.target.value);
+    setHasUnsavedChanges(true);
+  };
+
+  const handleDescriptionChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    setDescription(e.target.value);
+    setHasUnsavedChanges(true);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    const trimmedTitle = title.trim();
+    const trimmedDescription = description.trim();
+
+    if (!trimmedTitle) {
+      return;
+    }
+
     onSubmit({
       ...task,
-      title: title.trim(),
-      description: description.trim(),
+      title: trimmedTitle,
+      description: trimmedDescription,
       status: task?.status || TaskStatus.TODO,
     });
+
+    setHasUnsavedChanges(false);
+  };
+
+  const handleCancel = () => {
+    if (
+      !hasUnsavedChanges ||
+      confirm("Are you sure you want to discard your changes?")
+    ) {
+      onCancel();
+    }
   };
 
   return (
@@ -37,16 +71,17 @@ const TaskForm: React.FC<TaskFormProps> = ({
     >
       <div>
         <label htmlFor="title" className={styles.label}>
-          Title
+          Title {task ? "(Editing)" : ""}
         </label>
         <input
           id="title"
           type="text"
           value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          onChange={handleTitleChange}
           className={styles.input}
           placeholder="Enter task title"
           required
+          disabled={isSubmitting}
         />
       </div>
       <div className="mt-4">
@@ -56,21 +91,30 @@ const TaskForm: React.FC<TaskFormProps> = ({
         <textarea
           id="description"
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          onChange={handleDescriptionChange}
           className={styles.textarea}
           placeholder="Enter task description"
+          disabled={isSubmitting}
         />
       </div>
       <div className={styles.buttonContainer}>
         <button
           type="button"
-          onClick={onCancel}
+          onClick={handleCancel}
           className={styles.cancelButton}
+          disabled={isSubmitting}
         >
           Cancel
         </button>
-        <button type="submit" className={styles.submitButton}>
-          {task ? "Save" : "Create"} Task
+        <button
+          type="submit"
+          className={clsx(
+            styles.submitButton,
+            isSubmitting && "opacity-50 cursor-not-allowed"
+          )}
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? "Saving..." : task ? "Save Task" : "Create Task"}
         </button>
       </div>
     </form>
