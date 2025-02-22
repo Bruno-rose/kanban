@@ -8,7 +8,7 @@ import NameInputModal from "@/components/NameInputModal";
 import { SocketProvider, useSocket } from "@/contexts/SocketContext";
 
 function Board() {
-  const { socket, connected } = useSocket();
+  const { socket } = useSocket();
   const [isClient, setIsClient] = useState(false);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [users, setUsers] = useState<User[]>([]);
@@ -81,7 +81,7 @@ function Board() {
   }, [socket]);
 
   const handleNameSubmit = (name: string) => {
-    if (!socket) return;
+    if (!socket || !socket.id) return;
 
     const newUser: User = {
       id: socket.id,
