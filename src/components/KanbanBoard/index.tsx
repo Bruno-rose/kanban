@@ -3,6 +3,7 @@ import React from "react";
 import {
   DndContext,
   DragEndEvent,
+  DragStartEvent,
   closestCenter,
   KeyboardSensor,
   PointerSensor,
@@ -43,12 +44,33 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
     })
   );
 
+  const handleDragStart = (event: DragStartEvent) => {
+    const taskId = event.active.id as string;
+    const task = tasks.find((t) => t.id === taskId);
+
+    if (task?.currentEditor) {
+      alert(
+        `Cannot move task - currently being edited by ${task.currentEditor}`
+      );
+    }
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
+      const taskId = active.id as string;
+      const task = tasks.find((t) => t.id === taskId);
+
+      if (task?.currentEditor) {
+        alert(
+          `Cannot move task - currently being edited by ${task.currentEditor}`
+        );
+        return;
+      }
+
       const newStatus = over.id as TaskStatus;
-      onTaskMove(active.id as string, newStatus);
+      onTaskMove(taskId, newStatus);
     }
   };
 
@@ -75,6 +97,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
+          onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
         >
           <div className={styles.columnsContainer}>
