@@ -1,36 +1,112 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Outbuild Kanban Board
 
-## Getting Started
+A real-time collaborative Kanban board application built with Next.js and Socket.IO. Multiple users can manage tasks collaboratively in real-time, with features like task creation, editing, deletion, and drag-and-drop functionality.
 
-First, run the development server:
+## Features
+
+- Real-time collaboration with multiple users
+- Drag and drop tasks between columns (To Do, In Progress, Done)
+- Create, edit, and delete tasks
+- Visual feedback for user interactions
+- Real-time presence indicators showing who is editing/moving tasks
+- Responsive and clean UI design
+
+## Tech Stack
+
+- Next.js 15
+- React 19
+- Socket.IO for real-time communication
+- TypeScript
+- Tailwind CSS for styling
+- Jest & React Testing Library for testing
+- DND Kit for drag and drop functionality
+
+## Prerequisites
+
+- Node.js (v18 or higher recommended)
+- Yarn package manager
+
+## Installation
+
+1. Clone the repository:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <repository-url>
+cd kanban
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+yarn install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+3. Start the development server:
 
-## Learn More
+```bash
+yarn dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+4. Start the Socket.IO server:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+yarn socket
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+This will start both the Next.js frontend (port 3000) and Socket.IO server (port 3001).
 
-## Deploy on Vercel
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Project Structure
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+src/
+├── app/                  # Next.js app directory
+├── components/          # React components
+├── contexts/           # React contexts
+├── server/            # Socket.IO server
+└── types/            # TypeScript types
+```
+
+## Testing
+
+Run the test suite:
+
+```bash
+yarn test
+```
+
+The project includes comprehensive unit tests for components and functionality.
+
+## Development
+
+The application uses:
+
+- Socket.IO for real-time communication between clients
+- DND Kit for drag-and-drop functionality
+- Tailwind CSS for styling
+- TypeScript for type safety
+- Jest and React Testing Library for testing
+
+## Features in Detail
+
+### Real-time Collaboration
+
+- Users can see other connected users
+- Visual indicators show who is editing or moving tasks
+- Changes are synchronized across all connected clients
+
+### Task Management
+
+- Create new tasks with title and description
+- Edit existing tasks
+- Delete tasks
+- Drag and drop tasks between columns
+- Concurrent editing protection
+
+### User Experience
+
+- Clean and intuitive interface
+- Visual feedback for user interactions
+- Responsive design
+- Error handling and user notifications
