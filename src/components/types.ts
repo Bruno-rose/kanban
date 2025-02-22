@@ -13,6 +13,7 @@ export interface Task {
   updatedAt: Date;
   assignedUsers: string[];
   currentEditor?: string;
+  currentDragger?: string;
 }
 
 export interface User {

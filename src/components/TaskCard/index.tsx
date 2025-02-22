@@ -22,6 +22,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showDragger, setShowDragger] = useState(false);
   const { socket } = useSocket();
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({
@@ -44,6 +45,16 @@ const TaskCard: React.FC<TaskCardProps> = ({
       }
     };
   }, [isEditing, socket, task.id]);
+
+  useEffect(() => {
+    if (task.currentDragger) {
+      setShowDragger(true);
+      const timer = setTimeout(() => {
+        setShowDragger(false);
+      }, 1700);
+      return () => clearTimeout(timer);
+    }
+  }, [task.currentDragger]);
 
   const style = transform
     ? {
@@ -117,15 +128,25 @@ const TaskCard: React.FC<TaskCardProps> = ({
       style={style}
       className={clsx(
         styles.card,
-        task.currentEditor && "border-2 border-yellow-400 bg-yellow-50"
+        task.currentEditor && "border-2 border-yellow-400 bg-yellow-50",
+        task.currentDragger && "border-2 border-blue-400 bg-blue-50"
       )}
     >
       <div {...listeners} {...attributes} className="cursor-move p-2">
         <div className="flex items-center justify-between">
           <h3 className={styles.title}>{task.title}</h3>
-          {task.currentEditor && (
-            <span className="text-sm text-yellow-600 font-medium bg-yellow-100 px-2 py-1 rounded">
-              Editing by {task.currentEditor}
+          {(task.currentEditor || (task.currentDragger && showDragger)) && (
+            <span className="text-sm font-medium px-2 py-1 rounded">
+              {task.currentEditor && (
+                <span className="text-yellow-600 bg-yellow-100">
+                  Editing by {task.currentEditor}
+                </span>
+              )}
+              {task.currentDragger && showDragger && (
+                <span className="text-blue-600 bg-blue-100">
+                  Moving by {task.currentDragger}
+                </span>
+              )}
             </span>
           )}
         </div>

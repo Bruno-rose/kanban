@@ -67,6 +67,22 @@ function Board() {
       alert(errorMessage);
     });
 
+    socket.on("taskDragStarted", (taskId, userName) => {
+      setTasks((prev) =>
+        prev.map((task) =>
+          task.id === taskId ? { ...task, currentDragger: userName } : task
+        )
+      );
+    });
+
+    socket.on("taskDragEnded", (taskId) => {
+      setTasks((prev) =>
+        prev.map((task) =>
+          task.id === taskId ? { ...task, currentDragger: undefined } : task
+        )
+      );
+    });
+
     return () => {
       socket.off("initialState");
       socket.off("userJoined");
@@ -77,6 +93,8 @@ function Board() {
       socket.off("taskEditingStarted");
       socket.off("taskEditingStopped");
       socket.off("deleteTaskError");
+      socket.off("taskDragStarted");
+      socket.off("taskDragEnded");
     };
   }, [socket]);
 

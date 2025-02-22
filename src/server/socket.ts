@@ -14,6 +14,8 @@ interface ServerToClientEvents {
   taskEditingStarted: (taskId: string, userName: string) => void;
   taskEditingStopped: (taskId: string) => void;
   deleteTaskError: (taskId: string, errorMessage: string) => void;
+  taskDragStarted: (taskId: string, userName: string) => void;
+  taskDragEnded: (taskId: string) => void;
 }
 
 interface ClientToServerEvents {
@@ -46,7 +48,8 @@ const io = new Server(httpServer, {
 const state = {
   tasks: [] as Task[],
   users: [] as User[],
-  editingSessions: new Map<string, string>() // taskId -> userId
+  editingSessions: new Map<string, string>(), // taskId -> userId
+  draggingSessions: new Map<string, string>() // taskId -> userId
 };
 
 io.on("connection", (socket) => {
@@ -108,6 +111,27 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("startDragging", (taskId) => {
+    const user = state.users.find(u => u.id === socket.id);
+    if (!user) return;
+
+    state.draggingSessions.set(taskId, socket.id);
+    const task = state.tasks.find(t => t.id === taskId);
+    if (task) {
+      task.currentDragger = user.name;
+      io.emit("taskDragStarted", taskId, user.name);
+    }
+  });
+
+  socket.on("stopDragging", (taskId) => {
+    state.draggingSessions.delete(taskId);
+    const task = state.tasks.find(t => t.id === taskId);
+    if (task) {
+      task.currentDragger = undefined;
+      io.emit("taskDragEnded", taskId);
+    }
+  });
+
   socket.on("disconnect", () => {
     // Clear any editing sessions for this user
     for (const [taskId, userId] of state.editingSessions.entries()) {
@@ -117,6 +141,18 @@ io.on("connection", (socket) => {
         if (task) {
           task.currentEditor = undefined;
           io.emit("taskEditingStopped", taskId);
+        }
+      }
+    }
+    
+    // Clear any dragging sessions for this user
+    for (const [taskId, userId] of state.draggingSessions.entries()) {
+      if (userId === socket.id) {
+        state.draggingSessions.delete(taskId);
+        const task = state.tasks.find(t => t.id === taskId);
+        if (task) {
+          task.currentDragger = undefined;
+          io.emit("taskDragEnded", taskId);
         }
       }
     }

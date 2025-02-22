@@ -17,6 +17,7 @@ import UserList from "@/components/UserList";
 import { Task, User, TaskStatus } from "@/components/types";
 
 import { styles } from "./styles";
+import { useSocket } from "@/contexts/SocketContext";
 
 interface KanbanBoardProps {
   tasks: Task[];
@@ -37,6 +38,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
   onTaskDelete,
   onTaskAdd,
 }) => {
+  const { socket } = useSocket();
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -52,14 +54,19 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
       alert(
         `Cannot move task - currently being edited by ${task.currentEditor}`
       );
+      return;
     }
+
+    socket?.emit("startDragging", taskId);
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
+    const taskId = active.id as string;
+
+    socket?.emit("stopDragging", taskId);
 
     if (over && active.id !== over.id) {
-      const taskId = active.id as string;
       const task = tasks.find((t) => t.id === taskId);
 
       if (task?.currentEditor) {
