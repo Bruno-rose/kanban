@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { faker } from "@faker-js/faker";
 import KanbanBoard from "./index";
 import { Task, User, TaskStatus } from "@/components/types";
@@ -30,6 +30,7 @@ const mockProps = {
 
 // Mock DndContext's onDragEnd handler
 const mockOnDragEnd = jest.fn();
+
 jest.mock("@dnd-kit/core", () => ({
   ...jest.requireActual("@dnd-kit/core"),
   DndContext: ({ children, onDragEnd }: any) => {
@@ -50,13 +51,21 @@ beforeEach(() => {
 describe("render", () => {
   it("renders the kanban board", () => {
     render(<KanbanBoard {...mockProps} />);
+
     expect(screen.getByTestId("kanban-board")).toBeInTheDocument();
   });
 
   it("renders all status columns", () => {
+    const mapStatusToTitle: Record<TaskStatus, string> = {
+      [TaskStatus.TODO]: "To Do",
+      [TaskStatus.IN_PROGRESS]: "In Progress",
+      [TaskStatus.DONE]: "Done",
+    };
+
     render(<KanbanBoard {...mockProps} />);
+
     Object.values(TaskStatus).forEach((status) => {
-      expect(screen.getByText(status)).toBeInTheDocument();
+      expect(screen.getByText(mapStatusToTitle[status])).toBeInTheDocument();
     });
   });
 
@@ -74,7 +83,7 @@ describe("render", () => {
 });
 
 describe("actions", () => {
-  it("calls onTaskMove when task is dragged to a new column", () => {
+  it("calls onTaskMove when task is dragged to a new column", async () => {
     render(<KanbanBoard {...mockProps} />);
 
     // Simulate drag end event through mocked DndContext
@@ -83,13 +92,15 @@ describe("actions", () => {
       over: { id: TaskStatus.IN_PROGRESS },
     });
 
-    expect(mockProps.onTaskMove).toHaveBeenCalledWith(
-      mockTask.id,
-      TaskStatus.IN_PROGRESS
-    );
+    await waitFor(() => {
+      expect(mockProps.onTaskMove).toHaveBeenCalledWith(
+        mockTask.id,
+        TaskStatus.IN_PROGRESS
+      );
+    });
   });
 
-  it("calls onTaskAdd when new task is created", () => {
+  it("calls onTaskAdd when new task is created", async () => {
     render(<KanbanBoard {...mockProps} />);
 
     // Find and click the "Add Task" button
@@ -102,10 +113,12 @@ describe("actions", () => {
     });
     fireEvent.submit(screen.getByTestId("task-form"));
 
-    expect(mockProps.onTaskAdd).toHaveBeenCalled();
-    const calledWith = mockProps.onTaskAdd.mock.calls[0][0];
-    expect(calledWith.title).toBe("New Task");
-    expect(calledWith.status).toBe(TaskStatus.TODO);
-    expect(calledWith.assignedUsers).toContain(mockProps.currentUser.id);
+    await waitFor(() => {
+      expect(mockProps.onTaskAdd).toHaveBeenCalled();
+      const calledWith = mockProps.onTaskAdd.mock.calls[0][0];
+      expect(calledWith.title).toBe("New Task");
+      expect(calledWith.status).toBe(TaskStatus.TODO);
+      expect(calledWith.assignedUsers).toContain(mockProps.currentUser.id);
+    });
   });
 });

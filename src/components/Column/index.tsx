@@ -9,9 +9,9 @@ interface ColumnProps {
   status: TaskStatus;
   tasks: Task[];
   users: User[];
-  onTaskEdit: (task: Task) => void;
-  onTaskDelete: (taskId: string) => void;
-  onTaskAdd: (task: Partial<Task>) => void;
+  onTaskEdit: (task: Task) => Promise<void>;
+  onTaskDelete: (taskId: string) => Promise<void>;
+  onTaskAdd: (task: Partial<Task>) => Promise<void>;
 }
 
 const Column: React.FC<ColumnProps> = ({
@@ -28,11 +28,11 @@ const Column: React.FC<ColumnProps> = ({
   const handleTaskAdd = async (taskData: Partial<Task>) => {
     try {
       setIsSubmitting(true);
-      await onTaskAdd({ ...taskData, status });
+      const taskWithStatus = { ...taskData, status };
+      await onTaskAdd(taskWithStatus);
       setShowTaskForm(false);
     } catch (error) {
       console.error("Failed to add task:", error);
-      alert("Failed to add task. Please try again.");
     } finally {
       setIsSubmitting(false);
     }

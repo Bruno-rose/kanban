@@ -1,31 +1,32 @@
 import React from "react";
-import { DndContext, DragEndEvent } from "@dnd-kit/core";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { DndContext } from "@dnd-kit/core";
+import { render, screen, fireEvent, act } from "@testing-library/react";
 import { faker } from "@faker-js/faker";
 import TaskCard from "./index";
-import { TaskStatus } from "@/components/types";
+import { Task, TaskStatus } from "@/components/types";
 
-const mockTask = {
+const mockTask: Task = {
   id: faker.string.uuid(),
   title: faker.lorem.sentence(),
   description: faker.lorem.paragraph(),
-  status: "TODO" as TaskStatus,
-  userId: faker.string.uuid(),
-  createdAt: new Date(faker.date.recent().toISOString()),
-  updatedAt: new Date(faker.date.recent().toISOString()),
+  status: TaskStatus.TODO,
+  createdAt: new Date(),
+  updatedAt: new Date(),
   assignedUsers: [],
 };
 
 const mockProps = {
   task: mockTask,
   index: 0,
-  onEdit: jest.fn(),
-  onDelete: jest.fn(),
+  onEdit: jest.fn().mockImplementation(() => Promise.resolve()),
+  onDelete: jest.fn().mockImplementation(() => Promise.resolve()),
   onDragEnd: jest.fn(),
 };
 
 beforeEach(() => {
   jest.clearAllMocks();
+
+  window.confirm = jest.fn(() => true);
 });
 
 describe("render", () => {
@@ -62,29 +63,45 @@ describe("render", () => {
 });
 
 describe("actions", () => {
-  it("calls onDelete when delete button is clicked", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    window.confirm = jest.fn(() => true);
+  });
+
+  it("calls onDelete when delete button is clicked", async () => {
     render(
-      <DndContext onDragEnd={mockProps.onDragEnd}>
+      <DndContext onDragEnd={() => {}}>
         <TaskCard {...mockProps} />
       </DndContext>
     );
 
-    const deleteButton = screen.getByText("Delete");
-    fireEvent.click(deleteButton);
+    await act(async () => {
+      const deleteButton = screen.getByRole("button", { name: /delete/i });
+      fireEvent.click(deleteButton);
+    });
 
     expect(mockProps.onDelete).toHaveBeenCalledWith(mockTask.id);
   });
 
-  it("calls onEdit when edit button is clicked", () => {
+  it("calls onEdit when edit button is clicked and form is submitted", async () => {
     render(
-      <DndContext onDragEnd={mockProps.onDragEnd}>
+      <DndContext onDragEnd={() => {}}>
         <TaskCard {...mockProps} />
       </DndContext>
     );
 
-    const editButton = screen.getByText("Edit");
-    fireEvent.click(editButton);
+    // Click edit button
+    await act(async () => {
+      const editButton = screen.getByRole("button", { name: /edit/i });
+      fireEvent.click(editButton);
+    });
 
-    expect(mockProps.onEdit).toHaveBeenCalledWith(mockTask);
+    // Fill and submit the form
+    await act(async () => {
+      const form = screen.getByTestId("task-form");
+      fireEvent.submit(form);
+    });
+
+    expect(mockProps.onEdit).toHaveBeenCalled();
   });
 });

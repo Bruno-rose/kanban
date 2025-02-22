@@ -52,7 +52,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
     }
   };
 
-  const handleAddTask = (taskData: Partial<Task>) => {
+  const handleAddTask = async (taskData: Partial<Task>) => {
     const newTask = {
       ...taskData,
       id: Date.now().toString(),
@@ -60,7 +60,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
       updatedAt: new Date(),
       assignedUsers: [currentUser.id],
     } as Task;
-    onTaskAdd(newTask);
+    await onTaskAdd(newTask);
   };
 
   return (
@@ -84,8 +84,8 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                 status={status}
                 tasks={tasks.filter((task) => task.status === status)}
                 users={users}
-                onTaskEdit={onTaskEdit}
-                onTaskDelete={onTaskDelete}
+                onTaskEdit={async (task) => await onTaskEdit(task)}
+                onTaskDelete={async (taskId) => await onTaskDelete(taskId)}
                 onTaskAdd={handleAddTask}
               />
             ))}

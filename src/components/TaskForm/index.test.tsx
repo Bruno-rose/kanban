@@ -51,10 +51,11 @@ describe("render", () => {
   it("renders with existing task data", () => {
     render(<TaskForm {...mockProps} task={mockTask} />);
 
-    expect(screen.getByLabelText("Title")).toHaveValue(mockTask.title);
-    expect(screen.getByLabelText("Description")).toHaveValue(
-      mockTask.description
-    );
+    const titleInput = screen.getByLabelText(/title/i);
+    const descriptionInput = screen.getByLabelText(/description/i);
+
+    expect(titleInput).toHaveValue(mockTask.title);
+    expect(descriptionInput).toHaveValue(mockTask.description);
     expect(screen.getByText("Save Task")).toBeVisible();
   });
 });
@@ -81,16 +82,16 @@ describe("actions", () => {
     });
   });
 
-  it("calls onSubmit with updated task data when editing", () => {
+  it("calls onSubmit with updated task data when editing", async () => {
     render(<TaskForm {...mockProps} task={mockTask} />);
 
     const newTitle = "Updated Task Title";
     const newDescription = "Updated Task Description";
 
-    fireEvent.change(screen.getByLabelText("Title"), {
+    fireEvent.change(screen.getByLabelText(/title/i), {
       target: { value: newTitle },
     });
-    fireEvent.change(screen.getByLabelText("Description"), {
+    fireEvent.change(screen.getByLabelText(/description/i), {
       target: { value: newDescription },
     });
     fireEvent.submit(screen.getByTestId("task-form"));
