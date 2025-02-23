@@ -22,13 +22,34 @@ const TaskCard: React.FC<TaskCardProps> = ({
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [showDragger, setShowDragger] = useState(false);
   const { socket } = useSocket();
+
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({
       id: task.id,
-      disabled: Boolean(task.currentEditor),
+      disabled: Boolean(task.currentEditor || isEditing),
     });
+
+  const style = {
+    transform: CSS.Translate.toString(transform),
+    opacity: isDragging ? 0.3 : undefined,
+  };
+
+  useEffect(() => {
+    if (!socket) return;
+
+    if (isDragging) {
+      socket.emit("startDragging", task.id);
+    } else {
+      socket.emit("stopDragging", task.id);
+    }
+
+    return () => {
+      if (isDragging) {
+        socket.emit("stopDragging", task.id);
+      }
+    };
+  }, [isDragging, socket, task.id]);
 
   useEffect(() => {
     if (!socket) return;
@@ -45,23 +66,6 @@ const TaskCard: React.FC<TaskCardProps> = ({
       }
     };
   }, [isEditing, socket, task.id]);
-
-  useEffect(() => {
-    if (task.currentDragger) {
-      setShowDragger(true);
-      const timer = setTimeout(() => {
-        setShowDragger(false);
-      }, 1700);
-      return () => clearTimeout(timer);
-    }
-  }, [task.currentDragger]);
-
-  const style = transform
-    ? {
-        transform: CSS.Translate.toString(transform),
-        opacity: isDragging ? 0.3 : undefined,
-      }
-    : undefined;
 
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -133,21 +137,28 @@ const TaskCard: React.FC<TaskCardProps> = ({
       className={clsx(
         styles.card,
         task.currentEditor && "border-2 border-yellow-400 bg-yellow-50",
-        task.currentDragger && "border-2 border-blue-400 bg-blue-50"
+        task.currentDragger && "border-2 border-blue-400 bg-blue-50",
+        task.currentEditor && "cursor-not-allowed opacity-75"
       )}
     >
-      <div {...listeners} {...attributes} className="cursor-move p-2">
+      <div
+        {...(task.currentEditor ? {} : { ...listeners, ...attributes })}
+        className={clsx(
+          "p-2",
+          task.currentEditor ? "cursor-not-allowed" : "cursor-move"
+        )}
+      >
         <div className="flex items-center justify-between">
           <h3 className={styles.title}>{task.title}</h3>
 
-          {(task.currentEditor || (task.currentDragger && showDragger)) && (
+          {(task.currentEditor || task.currentDragger) && (
             <span className="text-sm font-medium px-2 py-1 rounded">
               {task.currentEditor && (
                 <span className="text-yellow-600 bg-yellow-100">
                   Editing by {task.currentEditor}
                 </span>
               )}
-              {task.currentDragger && showDragger && (
+              {task.currentDragger && (
                 <span className="text-blue-600 bg-blue-100">
                   Moving by {task.currentDragger}
                 </span>
