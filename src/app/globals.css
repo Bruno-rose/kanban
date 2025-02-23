@@ -5,6 +5,7 @@
 :root {
   /* Light theme (default) */
   --custom-green: #7dff8a;
+  --custom-green-light: #cce2d7;
   --custom-dark: #101010;
   --custom-light: #fafafa;
 }
@@ -12,22 +13,22 @@
 @layer base {
   body {
     @apply bg-custom-light text-custom-dark;
-    font-family: system-ui, -apple-system, Arial, Helvetica, sans-serif;
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    -moz-font-smoothing: antialiased;
+    -o-font-smoothing: antialiased;
   }
 }
 
 @layer components {
   .btn {
-    @apply px-4 py-2 rounded-lg font-medium;
+    @apply px-4 py-2 rounded-lg font-medium transition-colors duration-200;
   }
   
   .btn-primary {
-    @apply btn bg-custom-green text-custom-dark;
+    @apply btn bg-custom-green text-custom-dark hover:bg-custom-green-light;
   }
   
   .btn-secondary {
-    @apply btn bg-gray-200 text-custom-dark;
+    @apply btn bg-gray-200 text-custom-dark hover:bg-gray-300;
   }
 }

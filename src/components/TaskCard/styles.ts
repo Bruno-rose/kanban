@@ -1,12 +1,12 @@
 export const styles = {
-  card: 'bg-custom-light p-4 rounded-lg shadow-card border border-gray-200 hover:bg-custom-green-light transition-colors duration-200',
+  card: 'bg-white p-4 rounded-lg shadow-card border border-gray-200 hover:border-custom-green transition-colors duration-200',
   header: 'flex justify-between items-start gap-3',
-  title: 'font-semibold text-custom-dark',
+  title: 'font-medium text-custom-dark',
   buttonContainer: 'flex gap-2 shrink-0',
-  editButton: 'px-2 py-1 text-sm bg-custom-green text-custom-dark rounded hover:bg-custom-green-light',
-  deleteButton: 'px-2 py-1 text-sm bg-red-500 text-white rounded',
-  description: 'mt-2 text-sm text-custom-dark',
-  footer: 'mt-4 flex items-center justify-between text-xs text-custom-dark',
+  editButton: 'btn-primary text-sm',
+  deleteButton: 'btn text-sm bg-red-500 text-white hover:bg-red-600',
+  description: 'mt-2 text-sm text-gray-600',
+  footer: 'mt-4 flex items-center justify-between text-xs text-gray-500',
   cursorMove: 'cursor-move',
-  dragHandle: 'p-2 hover:bg-gray-50 rounded transition-colors'
+  dragHandle: 'p-2 hover:bg-custom-green-light rounded transition-colors'
 };

@@ -1,8 +1,8 @@
 export const styles = {
-  container: 'bg-custom-light rounded-lg p-4 min-h-[600px] w-[320px] border border-gray-200',
-  title: 'text-lg font-semibold text-custom-dark mb-4 px-2',
-  content: 'space-y-3 min-h-[200px]',
-  addButton: 'w-full mt-4 bg-custom-green text-custom-dark px-4 py-2 rounded font-medium',
-  addIcon: 'w-5 h-5 text-gray-600',
-  emptyContent: 'flex items-center justify-center text-gray-500'
+  container: 'bg-white rounded-lg p-6 min-h-[600px] w-[320px] border border-gray-200 shadow-sm',
+  title: 'text-lg font-medium text-custom-dark mb-6',
+  content: 'space-y-4 min-h-[200px]',
+  addButton: 'btn-primary w-full mt-6 flex items-center justify-center gap-2',
+  addIcon: 'w-5 h-5',
+  emptyContent: 'flex items-center justify-center h-32 text-gray-400 text-sm'
 };
