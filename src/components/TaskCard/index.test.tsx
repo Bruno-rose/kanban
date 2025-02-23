@@ -85,14 +85,14 @@ describe("actions", () => {
 
   it("calls onEdit when edit button is clicked and form is submitted", async () => {
     render(
-      <DndContext onDragEnd={() => {}}>
+      <DndContext>
         <TaskCard {...mockProps} />
       </DndContext>
     );
 
-    // Click edit button
+    // Click edit button using test-id
     await act(async () => {
-      const editButton = screen.getByRole("button", { name: /edit/i });
+      const editButton = screen.getByTestId("edit-button");
       fireEvent.click(editButton);
     });
 

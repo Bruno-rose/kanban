@@ -92,9 +92,11 @@ const TaskCard: React.FC<TaskCardProps> = ({
 
     try {
       setIsDeleting(true);
+
       await onDelete(task.id);
     } catch (error) {
       console.error("Failed to delete task:", error);
+
       alert("Failed to delete task. Please try again.");
     } finally {
       setIsDeleting(false);
@@ -109,9 +111,11 @@ const TaskCard: React.FC<TaskCardProps> = ({
           onSubmit={async (updatedTask) => {
             try {
               await onEdit({ ...task, ...updatedTask });
+
               setIsEditing(false);
             } catch (error) {
               console.error("Failed to edit task:", error);
+
               alert("Failed to edit task. Please try again.");
             }
           }}
@@ -135,6 +139,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
       <div {...listeners} {...attributes} className="cursor-move p-2">
         <div className="flex items-center justify-between">
           <h3 className={styles.title}>{task.title}</h3>
+
           {(task.currentEditor || (task.currentDragger && showDragger)) && (
             <span className="text-sm font-medium px-2 py-1 rounded">
               {task.currentEditor && (
@@ -163,6 +168,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
             task.currentEditor && "opacity-50 cursor-not-allowed"
           )}
           disabled={isDeleting || Boolean(task.currentEditor)}
+          data-testid="edit-button"
         >
           Edit
         </button>
