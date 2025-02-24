@@ -36,6 +36,7 @@ const UserList: React.FC<UserListProps> = ({
                 {user.name.charAt(0)}
               </div>
             )}
+
             <span className={styles.userName}>{user.name}</span>
           </div>
         ))}

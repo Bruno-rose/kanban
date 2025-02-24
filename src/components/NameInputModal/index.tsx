@@ -19,6 +19,7 @@ const NameInputModal: React.FC<NameInputModalProps> = ({ onSubmit }) => {
     <div className={styles.overlay}>
       <div className={styles.container}>
         <h2 className={styles.title}>Enter Your Name</h2>
+
         <form
           onSubmit={handleSubmit}
           className={styles.form}
@@ -34,6 +35,7 @@ const NameInputModal: React.FC<NameInputModalProps> = ({ onSubmit }) => {
             data-testid="name-input"
             aria-label="Name"
           />
+
           <button type="submit" className={styles.button}>
             Start Using Kanban
           </button>

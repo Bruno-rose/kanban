@@ -73,6 +73,7 @@ const TaskForm: React.FC<TaskFormProps> = ({
         <label htmlFor="title" className={styles.label}>
           Title {task ? "(Editing)" : ""}
         </label>
+
         <input
           id="title"
           type="text"
@@ -88,6 +89,7 @@ const TaskForm: React.FC<TaskFormProps> = ({
         <label htmlFor="description" className={styles.label}>
           Description
         </label>
+
         <textarea
           id="description"
           value={description}
@@ -106,11 +108,12 @@ const TaskForm: React.FC<TaskFormProps> = ({
         >
           Cancel
         </button>
+
         <button
           type="submit"
           className={clsx(
             styles.submitButton,
-            isSubmitting && "opacity-50 cursor-not-allowed"
+            isSubmitting && styles.buttonDisabled
           )}
           disabled={isSubmitting}
         >

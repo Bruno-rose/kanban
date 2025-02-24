@@ -18,7 +18,6 @@ interface ColumnProps {
 const Column: React.FC<ColumnProps> = ({
   status,
   tasks,
-  users,
   currentUser,
   onTaskEdit,
   onTaskDelete,
@@ -31,8 +30,10 @@ const Column: React.FC<ColumnProps> = ({
   const handleTaskAdd = async (taskData: Partial<Task>) => {
     try {
       setIsSubmitting(true);
+
       const taskWithStatus = { ...taskData, status };
       await onTaskAdd(taskWithStatus);
+
       setShowTaskForm(false);
     } catch (error) {
       console.error("Failed to add task:", error);
@@ -61,11 +62,10 @@ const Column: React.FC<ColumnProps> = ({
         )}
 
         {tasks.length > 0 &&
-          tasks.map((task, index) => (
+          tasks.map((task) => (
             <TaskCard
               key={task.id}
               task={task}
-              index={index}
               currentUser={currentUser}
               onEdit={onTaskEdit}
               onDelete={onTaskDelete}
