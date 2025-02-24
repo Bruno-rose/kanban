@@ -115,8 +115,8 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                 tasks={tasks.filter((task) => task.status === status)}
                 currentUser={currentUser}
                 users={users}
-                onTaskEdit={async (task) => await onTaskEdit(task)}
-                onTaskDelete={async (taskId) => await onTaskDelete(taskId)}
+                onTaskEdit={async (task) => onTaskEdit(task)}
+                onTaskDelete={async (taskId) => onTaskDelete(taskId)}
                 onTaskAdd={handleAddTask}
               />
             ))}
