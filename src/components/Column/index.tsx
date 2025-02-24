@@ -9,6 +9,7 @@ interface ColumnProps {
   status: TaskStatus;
   tasks: Task[];
   users: User[];
+  currentUser: User;
   onTaskEdit: (task: Task) => Promise<void>;
   onTaskDelete: (taskId: string) => Promise<void>;
   onTaskAdd: (task: Partial<Task>) => Promise<void>;
@@ -17,6 +18,8 @@ interface ColumnProps {
 const Column: React.FC<ColumnProps> = ({
   status,
   tasks,
+  users,
+  currentUser,
   onTaskEdit,
   onTaskDelete,
   onTaskAdd,
@@ -59,6 +62,7 @@ const Column: React.FC<ColumnProps> = ({
               key={task.id}
               task={task}
               index={index}
+              currentUser={currentUser}
               onEdit={onTaskEdit}
               onDelete={onTaskDelete}
             />

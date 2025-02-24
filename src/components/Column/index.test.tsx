@@ -20,10 +20,13 @@ const mockUser: User = {
   name: faker.person.fullName(),
 };
 
+const mockCurrentUser: User = mockUser;
+
 const mockProps = {
   status: TaskStatus.TODO,
   tasks: [mockTask],
   users: [mockUser],
+  currentUser: mockCurrentUser,
   onTaskEdit: jest.fn().mockImplementation(() => Promise.resolve()),
   onTaskDelete: jest.fn().mockImplementation(() => Promise.resolve()),
   onTaskAdd: jest.fn().mockImplementation(() => Promise.resolve()),

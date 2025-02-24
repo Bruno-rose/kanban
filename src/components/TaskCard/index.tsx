@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { styles } from "./styles";
-import { Task } from "@/components/types";
+import { Task, User } from "@/components/types";
 import TaskForm from "@/components/TaskForm";
 import { useSocket } from "@/contexts/SocketContext";
 import clsx from "clsx";
@@ -10,6 +10,7 @@ import clsx from "clsx";
 interface TaskCardProps {
   task: Task;
   index: number;
+  currentUser: User;
   onEdit: (task: Task) => Promise<void>;
   onDelete: (taskId: string) => Promise<void>;
 }
@@ -17,6 +18,7 @@ interface TaskCardProps {
 const TaskCard: React.FC<TaskCardProps> = ({
   task,
   index,
+  currentUser,
   onEdit,
   onDelete,
 }) => {
@@ -107,6 +109,10 @@ const TaskCard: React.FC<TaskCardProps> = ({
     }
   };
 
+  // Only show dragger indicator if the current user is not the one dragging
+  const showDraggerIndicator =
+    task.currentDragger && task.currentDragger !== currentUser.name;
+
   if (isEditing) {
     return (
       <div ref={setNodeRef} style={style} {...attributes}>
@@ -137,7 +143,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
       className={clsx(
         styles.card,
         task.currentEditor && "border-2 border-yellow-400 bg-yellow-50",
-        task.currentDragger && "border-2 border-blue-400 bg-blue-50",
+        showDraggerIndicator && "border-2 border-blue-400 bg-blue-50",
         task.currentEditor && "cursor-not-allowed opacity-75"
       )}
     >
@@ -151,14 +157,14 @@ const TaskCard: React.FC<TaskCardProps> = ({
         <div className="flex items-center justify-between">
           <h3 className={styles.title}>{task.title}</h3>
 
-          {(task.currentEditor || task.currentDragger) && (
+          {(task.currentEditor || showDraggerIndicator) && (
             <span className="text-sm font-medium px-2 py-1 rounded">
               {task.currentEditor && (
                 <span className="text-yellow-600 bg-yellow-100">
                   Editing by {task.currentEditor}
                 </span>
               )}
-              {task.currentDragger && (
+              {showDraggerIndicator && (
                 <span className="text-blue-600 bg-blue-100">
                   Moving by {task.currentDragger}
                 </span>

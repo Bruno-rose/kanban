@@ -3,7 +3,7 @@ import { DndContext } from "@dnd-kit/core";
 import { render, screen, fireEvent, act } from "@testing-library/react";
 import { faker } from "@faker-js/faker";
 import TaskCard from "./index";
-import { Task, TaskStatus } from "@/components/types";
+import { Task, TaskStatus, User } from "@/components/types";
 
 const mockTask: Task = {
   id: faker.string.uuid(),
@@ -15,9 +15,15 @@ const mockTask: Task = {
   assignedUsers: [],
 };
 
+const mockCurrentUser: User = {
+  id: faker.string.uuid(),
+  name: faker.person.fullName(),
+};
+
 const mockProps = {
   task: mockTask,
   index: 0,
+  currentUser: mockCurrentUser,
   onEdit: jest.fn().mockImplementation(() => Promise.resolve()),
   onDelete: jest.fn().mockImplementation(() => Promise.resolve()),
   onDragEnd: jest.fn(),
