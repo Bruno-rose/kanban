@@ -56,7 +56,11 @@ const Column: React.FC<ColumnProps> = ({
       <h2 className={styles.title}>{mapStatusToTitle[status]}</h2>
 
       <div ref={setNodeRef} className={styles.content}>
-        {tasks.length > 0 ? (
+        {tasks.length === 0 && !showTaskForm && (
+          <div className={styles.emptyContent}>No tasks yet</div>
+        )}
+
+        {tasks.length > 0 &&
           tasks.map((task, index) => (
             <TaskCard
               key={task.id}
@@ -66,10 +70,7 @@ const Column: React.FC<ColumnProps> = ({
               onEdit={onTaskEdit}
               onDelete={onTaskDelete}
             />
-          ))
-        ) : (
-          <div className={styles.emptyContent}>No tasks yet</div>
-        )}
+          ))}
 
         {!showTaskForm && (
           <button
