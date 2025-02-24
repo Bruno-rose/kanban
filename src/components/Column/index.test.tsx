@@ -58,6 +58,21 @@ it("renders task cards", async () => {
   });
 });
 
+it("renders empty content when no tasks are present", () => {
+  const mockPropsWithNoTasks = {
+    ...mockProps,
+    tasks: [],
+  };
+
+  render(
+    <DndContext onDragEnd={() => {}}>
+      <Column {...mockPropsWithNoTasks} />
+    </DndContext>
+  );
+
+  expect(screen.getByText("No tasks yet")).toBeVisible();
+});
+
 it("handles adding a new task", async () => {
   render(
     <DndContext onDragEnd={() => {}}>
