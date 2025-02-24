@@ -25,6 +25,8 @@ interface ClientToServerEvents {
   addTask: (task: Task) => void;
   startEditing: (taskId: string) => void;
   stopEditing: (taskId: string) => void;
+  startDragging: (taskId: string) => void;
+  stopDragging: (taskId: string) => void;
 }
 
 const app = express();
@@ -32,7 +34,7 @@ app.use(cors());
 
 const httpServer = createServer(app);
 
-const io = new Server(httpServer, {
+const io = new Server<ClientToServerEvents, ServerToClientEvents>(httpServer, {
   cors: {
     origin: "http://localhost:3000",
     methods: ["GET", "POST"],
