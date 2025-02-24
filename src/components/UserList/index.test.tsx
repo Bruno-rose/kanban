@@ -22,7 +22,7 @@ describe("UserList", () => {
     render(<UserList users={mockUsers} currentUser={mockCurrentUser} />);
 
     mockUsers.forEach((user) => {
-      expect(screen.getByText(user.name)).toBeInTheDocument();
+      expect(screen.getByText(user.name)).toBeVisible();
     });
   });
 
@@ -43,7 +43,7 @@ describe("UserList", () => {
 
     const avatar = screen.getByAltText(mockUsers[0].name);
 
-    expect(avatar).toBeInTheDocument();
+    expect(avatar).toBeVisible();
     expect(avatar).toHaveAttribute("src", mockUsers[0].avatar);
   });
 
@@ -52,6 +52,6 @@ describe("UserList", () => {
 
     const placeholder = screen.getByText("J");
 
-    expect(placeholder).toBeInTheDocument();
+    expect(placeholder).toBeVisible();
   });
 });
