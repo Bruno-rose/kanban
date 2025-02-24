@@ -1,5 +1,14 @@
 export const styles = {
   card: 'bg-white p-4 rounded-lg shadow-card border border-gray-200 hover:border-custom-green transition-colors duration-200 relative',
+  cardEditing: 'border-2 border-yellow-400 bg-yellow-50',
+  cardDragging: 'border-2 border-blue-400 bg-blue-50',
+  cardDisabled: 'cursor-not-allowed opacity-75',
+  dragArea: 'p-2',
+  dragAreaDisabled: 'cursor-not-allowed',
+  dragAreaEnabled: 'cursor-move',
+  statusBadge: 'text-sm font-medium px-2 py-1 rounded',
+  editingBadge: 'text-yellow-600 bg-yellow-100',
+  draggingBadge: 'text-blue-600 bg-blue-100',
   header: 'flex justify-between items-start gap-3',
   title: 'font-medium text-custom-dark',
   buttonContainer: 'absolute bottom-2 right-2 flex gap-1',
@@ -8,5 +17,6 @@ export const styles = {
   description: 'mt-2 text-sm text-gray-600 mb-8',
   footer: 'mt-4 flex items-center justify-between text-xs text-gray-500',
   cursorMove: 'cursor-move',
-  dragHandle: 'p-2 hover:bg-custom-green-light rounded transition-colors'
+  dragHandle: 'p-2 hover:bg-custom-green-light rounded transition-colors',
+  buttonDisabled: 'opacity-50 cursor-not-allowed',
 };

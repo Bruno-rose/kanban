@@ -9,7 +9,6 @@ import clsx from "clsx";
 
 interface TaskCardProps {
   task: Task;
-  index: number;
   currentUser: User;
   onEdit: (task: Task) => Promise<void>;
   onDelete: (taskId: string) => Promise<void>;
@@ -17,7 +16,6 @@ interface TaskCardProps {
 
 const TaskCard: React.FC<TaskCardProps> = ({
   task,
-  index,
   currentUser,
   onEdit,
   onDelete,
@@ -109,9 +107,8 @@ const TaskCard: React.FC<TaskCardProps> = ({
     }
   };
 
-  // Only show dragger indicator if the current user is not the one dragging
   const showDraggerIndicator =
-    task.currentDragger && task.currentDragger !== currentUser.name;
+    task.currentDragger !== currentUser.name && task.currentDragger;
 
   if (isEditing) {
     return (
@@ -142,30 +139,30 @@ const TaskCard: React.FC<TaskCardProps> = ({
       style={style}
       className={clsx(
         styles.card,
-        task.currentEditor && "border-2 border-yellow-400 bg-yellow-50",
-        showDraggerIndicator && "border-2 border-blue-400 bg-blue-50",
-        task.currentEditor && "cursor-not-allowed opacity-75"
+        task.currentEditor && styles.cardEditing,
+        showDraggerIndicator && styles.cardDragging,
+        task.currentEditor && styles.cardDisabled
       )}
     >
       <div
         {...(task.currentEditor ? {} : { ...listeners, ...attributes })}
         className={clsx(
-          "p-2",
-          task.currentEditor ? "cursor-not-allowed" : "cursor-move"
+          styles.dragArea,
+          task.currentEditor ? styles.dragAreaDisabled : styles.dragAreaEnabled
         )}
       >
         <div className="flex items-center justify-between">
           <h3 className={styles.title}>{task.title}</h3>
 
           {(task.currentEditor || showDraggerIndicator) && (
-            <span className="text-sm font-medium px-2 py-1 rounded">
+            <span className={styles.statusBadge}>
               {task.currentEditor && (
-                <span className="text-yellow-600 bg-yellow-100">
+                <span className={styles.editingBadge}>
                   Editing by {task.currentEditor}
                 </span>
               )}
               {showDraggerIndicator && (
-                <span className="text-blue-600 bg-blue-100">
+                <span className={styles.draggingBadge}>
                   Moving by {task.currentDragger}
                 </span>
               )}
@@ -182,7 +179,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
           onClick={handleEdit}
           className={clsx(
             styles.editButton,
-            task.currentEditor && "opacity-50 cursor-not-allowed"
+            task.currentEditor && styles.buttonDisabled
           )}
           disabled={isDeleting || Boolean(task.currentEditor)}
           data-testid="edit-button"
@@ -194,7 +191,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
           onClick={handleDelete}
           className={clsx(
             styles.deleteButton,
-            task.currentEditor && "opacity-50 cursor-not-allowed"
+            task.currentEditor && styles.buttonDisabled
           )}
           disabled={isDeleting || Boolean(task.currentEditor)}
         >
