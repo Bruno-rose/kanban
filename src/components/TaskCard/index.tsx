@@ -198,7 +198,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
           )}
           disabled={isDeleting || Boolean(task.currentEditor)}
         >
-          {isDeleting ? "Deleting..." : "Delete"}
+          {isDeleting ? "..." : "Delete"}
         </button>
       </div>
     </div>
