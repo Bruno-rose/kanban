@@ -52,7 +52,7 @@ describe("render", () => {
   it("renders the kanban board", () => {
     render(<KanbanBoard {...mockProps} />);
 
-    expect(screen.getByTestId("kanban-board")).toBeInTheDocument();
+    expect(screen.getByTestId("kanban-board")).toBeVisible();
   });
 
   it("renders all status columns", () => {
@@ -65,20 +65,20 @@ describe("render", () => {
     render(<KanbanBoard {...mockProps} />);
 
     Object.values(TaskStatus).forEach((status) => {
-      expect(screen.getByText(mapStatusToTitle[status])).toBeInTheDocument();
+      expect(screen.getByText(mapStatusToTitle[status])).toBeVisible();
     });
   });
 
   it("renders user list", () => {
     render(<KanbanBoard {...mockProps} />);
     mockUsers.forEach((user) => {
-      expect(screen.getByText(user.name)).toBeInTheDocument();
+      expect(screen.getByText(user.name)).toBeVisible();
     });
   });
 
   it("renders tasks in correct columns", () => {
     render(<KanbanBoard {...mockProps} />);
-    expect(screen.getByText(mockTask.title)).toBeInTheDocument();
+    expect(screen.getByText(mockTask.title)).toBeVisible();
   });
 });
 
