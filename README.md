@@ -16,6 +16,7 @@ A real-time collaborative Kanban board application built with Next.js and Socket
 - Next.js 15
 - React 19
 - Socket.IO for real-time communication
+  > Socket.IO was chosen over raw WebSockets for its robust features including automatic reconnection, fallback support, built-in event system, and room management capabilities - making it ideal for real-time collaborative applications.
 - TypeScript
 - Tailwind CSS for styling
 - Jest & React Testing Library for testing
@@ -31,7 +32,7 @@ A real-time collaborative Kanban board application built with Next.js and Socket
 1. Clone the repository:
 
 ```bash
-git clone <repository-url>
+git clone git@github.com:Bruno-rose/kanban.git
 cd kanban
 ```
 
