@@ -19,7 +19,7 @@ describe("NameInputModal", () => {
     it("renders the input field", () => {
       render(<NameInputModal onSubmit={mockOnSubmit} />);
 
-      expect(screen.getByTestId("name-input")).toBeVisible();
+      expect(screen.getByPlaceholderText("Your name")).toBeVisible();
     });
 
     it("renders the submit button", () => {
