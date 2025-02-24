@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
+import clsx from "clsx";
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { styles } from "./styles";
 import { Task, User } from "@/components/types";
 import TaskForm from "@/components/TaskForm";
 import { useSocket } from "@/contexts/SocketContext";
-import clsx from "clsx";
+import ConfirmationModal from "@/components/ConfirmationModal";
 
 interface TaskCardProps {
   task: Task;
@@ -22,6 +23,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const { socket } = useSocket();
 
   const { attributes, listeners, setNodeRef, transform, isDragging } =
@@ -80,7 +82,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
     setIsEditing(true);
   };
 
-  const handleDelete = async (e: React.MouseEvent) => {
+  const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
 
     if (task.currentEditor) {
@@ -90,20 +92,19 @@ const TaskCard: React.FC<TaskCardProps> = ({
       return;
     }
 
-    if (!window.confirm("Are you sure you want to delete this task?")) {
-      return;
-    }
+    setShowDeleteConfirmation(true);
+  };
 
+  const handleConfirmDelete = async () => {
     try {
       setIsDeleting(true);
-
       await onDelete(task.id);
     } catch (error) {
       console.error("Failed to delete task:", error);
-
       alert("Failed to delete task. Please try again.");
     } finally {
       setIsDeleting(false);
+      setShowDeleteConfirmation(false);
     }
   };
 
@@ -200,6 +201,14 @@ const TaskCard: React.FC<TaskCardProps> = ({
           {isDeleting ? "..." : "Delete"}
         </button>
       </div>
+
+      <ConfirmationModal
+        isOpen={showDeleteConfirmation}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setShowDeleteConfirmation(false)}
+        title="Delete Task"
+        message="Are you sure you want to delete this task? This action cannot be undone."
+      />
     </div>
   );
 };

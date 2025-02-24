@@ -84,19 +84,48 @@ describe("actions", () => {
     window.confirm = jest.fn(() => true);
   });
 
-  it("calls onDelete when delete button is clicked", async () => {
+  it("calls onDelete when delete button is clicked and confirmed", async () => {
     render(
       <DndContext onDragEnd={() => {}}>
         <TaskCard {...mockProps} />
       </DndContext>
     );
 
+    // Click delete button
     await act(async () => {
       const deleteButton = screen.getByRole("button", { name: /delete/i });
       fireEvent.click(deleteButton);
     });
 
+    // Confirm deletion in modal
+    await act(async () => {
+      const confirmButton = screen.getByTestId("confirm-delete-button");
+      fireEvent.click(confirmButton);
+    });
+
     expect(mockProps.onDelete).toHaveBeenCalledWith(mockTask.id);
+  });
+
+  it("does not call onDelete when deletion is canceled", async () => {
+    render(
+      <DndContext onDragEnd={() => {}}>
+        <TaskCard {...mockProps} />
+      </DndContext>
+    );
+
+    // Click delete button
+    await act(async () => {
+      const deleteButton = screen.getByRole("button", { name: /delete/i });
+      fireEvent.click(deleteButton);
+    });
+
+    // Cancel deletion in modal
+    await act(async () => {
+      const cancelButton = screen.getByTestId("cancel-delete-button");
+      fireEvent.click(cancelButton);
+    });
+
+    expect(mockProps.onDelete).not.toHaveBeenCalled();
   });
 
   it("calls onEdit when edit button is clicked and form is submitted", async () => {
