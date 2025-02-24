@@ -13,6 +13,8 @@ const mockTask: Task = {
   createdAt: new Date(),
   updatedAt: new Date(),
   assignedUsers: [],
+  currentEditor: undefined,
+  currentDragger: undefined,
 };
 
 const mockCurrentUser: User = {
@@ -22,7 +24,6 @@ const mockCurrentUser: User = {
 
 const mockProps = {
   task: mockTask,
-  index: 0,
   currentUser: mockCurrentUser,
   onEdit: jest.fn().mockImplementation(() => Promise.resolve()),
   onDelete: jest.fn().mockImplementation(() => Promise.resolve()),
@@ -36,7 +37,7 @@ beforeEach(() => {
 });
 
 describe("render", () => {
-  it("renders task title and description", () => {
+  it("renders task title", () => {
     render(
       <DndContext onDragEnd={mockProps.onDragEnd}>
         <TaskCard {...mockProps} />
@@ -44,6 +45,15 @@ describe("render", () => {
     );
 
     expect(screen.getByText(mockTask.title)).toBeVisible();
+  });
+
+  it("renders task description", () => {
+    render(
+      <DndContext onDragEnd={mockProps.onDragEnd}>
+        <TaskCard {...mockProps} />
+      </DndContext>
+    );
+
     expect(screen.getByText(mockTask.description)).toBeVisible();
   });
 
@@ -109,5 +119,35 @@ describe("actions", () => {
     });
 
     expect(mockProps.onEdit).toHaveBeenCalled();
+  });
+
+  it("renders editing badge when task is being edited", () => {
+    const taskWithEditor = {
+      ...mockTask,
+      currentEditor: "John Doe",
+    };
+
+    render(
+      <DndContext onDragEnd={mockProps.onDragEnd}>
+        <TaskCard {...mockProps} task={taskWithEditor} />
+      </DndContext>
+    );
+
+    expect(screen.getByText(/Editing by John Doe/)).toBeVisible();
+  });
+
+  it("renders dragging badge when task is being dragged", () => {
+    const taskWithDragger = {
+      ...mockTask,
+      currentDragger: "Jane Doe",
+    };
+
+    render(
+      <DndContext onDragEnd={mockProps.onDragEnd}>
+        <TaskCard {...mockProps} task={taskWithDragger} />
+      </DndContext>
+    );
+
+    expect(screen.getByText(/Moving by Jane Doe/)).toBeVisible();
   });
 });
