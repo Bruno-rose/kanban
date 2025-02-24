@@ -136,6 +136,8 @@ const TaskCard: React.FC<TaskCardProps> = ({
   return (
     <div
       ref={setNodeRef}
+      data-testid={`task-${task.id}`}
+      draggable="true"
       style={style}
       className={clsx(
         styles.card,

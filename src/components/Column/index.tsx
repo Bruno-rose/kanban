@@ -56,7 +56,11 @@ const Column: React.FC<ColumnProps> = ({
     <div className={styles.container}>
       <h2 className={styles.title}>{mapStatusToTitle[status]}</h2>
 
-      <div ref={setNodeRef} className={styles.content}>
+      <div
+        ref={setNodeRef}
+        data-testid={`column-${status}`}
+        className={styles.content}
+      >
         {tasks.length === 0 && !showTaskForm && (
           <div className={styles.emptyContent}>No tasks yet</div>
         )}
