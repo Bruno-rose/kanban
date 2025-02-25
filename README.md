@@ -48,12 +48,6 @@ yarn install
 yarn dev
 ```
 
-4. Start the Socket.IO server:
-
-```bash
-yarn socket
-```
-
 This will start both the Next.js frontend (port 3000) and Socket.IO server (port 3001).
 
 5. Open [http://localhost:3000](http://localhost:3000) in your browser.
